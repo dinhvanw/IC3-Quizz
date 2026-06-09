@@ -122,3 +122,106 @@ export function formatAnswer(val, question) {
   const choices = question.choices || question.options
   return choices ? choices[val] : val
 }
+
+// ---------- Shuffling helpers for exam mode (GMETRIX-style) ----------
+export function shuffleArray(arr) {
+  const a = Array.isArray(arr) ? [...arr] : []
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const tmp = a[i]
+    a[i] = a[j]
+    a[j] = tmp
+  }
+  return a
+}
+
+function remapIndexMap(originalLength, shuffledIndices) {
+  // Returns a map from oldIndex -> newIndex
+  const map = new Array(originalLength).fill(-1)
+  shuffledIndices.forEach((oldIdx, newIdx) => { map[oldIdx] = newIdx })
+  return map
+}
+
+function shuffleQuestionChoices(question) {
+  if (!question) return question
+  const q = { ...question }
+
+  // Handle matrix-like questions: shuffle columns
+  const matrixTypes = ['matrix_radio', 'TRUE_FALSE_MATRIX', 'table']
+  if (matrixTypes.includes(q.type)) {
+    const origCols = Array.isArray(q.columns) ? q.columns : []
+    if (origCols.length === 0) return q
+    const indices = origCols.map((_, i) => i)
+    const shuffled = shuffleArray(indices)
+    q.columns = shuffled.map(i => origCols[i])
+    const indexMap = remapIndexMap(origCols.length, shuffled)
+    
+    // Remap answer object keys (from column index to new column index)
+    if (q.answer && typeof q.answer === 'object' && !Array.isArray(q.answer)) {
+      const newAnswer = {}
+      Object.keys(q.answer).forEach(rowId => {
+        const oldColIdx = q.answer[rowId]
+        newAnswer[rowId] = indexMap[oldColIdx] ?? oldColIdx
+      })
+      q.answer = newAnswer
+    }
+    return q
+  }
+
+  // Handle matching questions: shuffle rightItems and remap correctPairs.r
+  if (q.type === 'matching' || q.type === 'questionBox') {
+    const origRight = Array.isArray(q.rightItems) ? q.rightItems : []
+    if (origRight.length === 0) return q
+    const indices = origRight.map((_, i) => i)
+    const shuffled = shuffleArray(indices)
+    q.rightItems = shuffled.map(i => origRight[i])
+    const indexMap = remapIndexMap(origRight.length, shuffled)
+    if (Array.isArray(q.correctPairs)) {
+      q.correctPairs = q.correctPairs.map(p => ({ l: p.l, r: indexMap[p.r] ?? p.r }))
+    }
+    return q
+  }
+
+  // Only shuffle choices/options/items for standard choice-like questions
+  const key = q.choices ? 'choices' : q.options ? 'options' : q.items ? 'items' : null
+  if (!key) return q
+
+  const orig = Array.isArray(q[key]) ? q[key] : []
+  if (orig.length === 0) return q
+  const indices = orig.map((_, i) => i)
+  const shuffledIndices = shuffleArray(indices)
+  const newArr = shuffledIndices.map(i => orig[i])
+  q[key] = newArr
+
+  const indexMap = remapIndexMap(orig.length, shuffledIndices)
+
+  // Remap single numeric answer
+  if (typeof q.answer === 'number') {
+    const oldIdx = q.answer
+    q.answer = indexMap[oldIdx] ?? q.answer
+  }
+
+  // Remap array of correctAnswers (indices)
+  if (Array.isArray(q.correctAnswers)) {
+    q.correctAnswers = q.correctAnswers.map(oldIdx => indexMap[oldIdx] ?? oldIdx)
+  }
+
+  // If question stores correctOrder for drag_drop using indices, remap accordingly
+  if (Array.isArray(q.correctOrder) && key === 'items') {
+    q.correctOrder = q.correctOrder.map(oldIdx => indexMap[oldIdx] ?? oldIdx)
+  }
+
+  return q
+}
+
+export function prepareQuizForMode(quiz, mode) {
+  if (!quiz) return quiz
+  const newQuiz = { ...quiz }
+  let questions = Array.isArray(newQuiz.questions) ? [...newQuiz.questions] : []
+  if (mode === 'exam') {
+    // Shuffle question order and choices only in exam mode
+    questions = shuffleArray(questions).map(q => shuffleQuestionChoices(q))
+  }
+  newQuiz.questions = questions
+  return newQuiz
+}

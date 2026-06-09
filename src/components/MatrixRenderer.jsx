@@ -1,6 +1,12 @@
 import React from 'react';
 import { HtmlInline } from '../utils/htmlRenderer.jsx';
 
+const formatTitle = (s) => {
+  if (!s) return "";
+  const lower = String(s).toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+};
+
 export default function MatrixRenderer({ question, selected, onSelect, isLocked, showCorrect, displayTitle }) {
   const { type, rows, devices, columns, answer: correctAnswer } = question; // `devices` là alias cho `rows`
   // console.log('[MatrixRenderer] received question:', question); // Giữ lại để debug nếu cần
@@ -71,12 +77,13 @@ export default function MatrixRenderer({ question, selected, onSelect, isLocked,
     return (
       <div className="mb-6 w-full border border-gray-300 shadow-sm rounded-md overflow-hidden">
         <div className="flex bg-slate-100 text-slate-700 border-b border-gray-200 items-stretch">
-          <div className="flex-1 p-3 flex items-center px-4 text-[10px] font-black uppercase text-slate-400 tracking-widest">
-            {displayTitle ? "Nội dung câu hỏi" : ""}
+          <div className="flex-1 p-3 flex items-center px-4 text-[10px] font-black text-slate-400 tracking-widest">
+            {/* intentionally hide the left "Nội dung câu hỏi" title for TRUE/FALSE matrix */}
+            {""}
           </div>
           {colData.map((col, idx) => (
-            <div key={idx} className="w-16 sm:w-24 flex-shrink-0 p-2 text-center border-l border-slate-200 bg-[rgb(2,132,199)] text-white flex items-center justify-center font-bold text-base uppercase tracking-tighter leading-tight">
-              {col}
+            <div key={idx} className="w-16 sm:w-24 flex-shrink-0 p-2 text-center border-l border-slate-200 bg-[rgb(2,132,199)] text-white flex items-center justify-center font-bold text-base tracking-tighter leading-tight">
+              {formatTitle(col)}
             </div>
           ))}
         </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import Results from './Results.jsx'
 import QuestionRenderer from './QuestionRenderer.jsx'
-import { checkAnswer } from '../utils/quizUtils.js'
+import { checkAnswer, prepareQuizForMode } from '../utils/quizUtils.js'
 import { sanitizeHtml } from '../utils/htmlRenderer.jsx'
 
 const modeLabels = {
@@ -26,8 +26,9 @@ function saveHistory(entry) {
 }
 
 export default function Quiz({ quiz, mode, onExit }) {
-  const questions = quiz?.questions || [];
-  
+  const preparedQuiz = useMemo(() => prepareQuizForMode(quiz, mode), [quiz, mode])
+  const questions = preparedQuiz?.questions || []
+
   const [index, setIndex] = useState(0)
   const [maxIndex, setMaxIndex] = useState(0)
   const [answers, setAnswers] = useState(Array(questions.length).fill(null))
