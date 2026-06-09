@@ -14,6 +14,33 @@ export default function MultipleChoiceRenderer({ question, selected, onSelect, i
     return typeof url === 'string' && (url.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i) != null || url.startsWith('http'));
   };
 
+  const renderTwoLineChoiceText = (text) => {
+    const raw = String(text).trim();
+    const words = raw.split(/\s+/).filter(Boolean);
+    const MAX_FIRST_WORDS = 16;
+
+    if (words.length <= MAX_FIRST_WORDS) return raw;
+
+    // Default split: first line = first MAX_FIRST_WORDS words
+    let splitIndex = Math.min(MAX_FIRST_WORDS, words.length - 1);
+
+    // Avoid leaving a single word on the second line
+    if (words.length - splitIndex === 1 && splitIndex > 1) {
+      splitIndex -= 1;
+    }
+
+    const firstLine = words.slice(0, splitIndex).join(' ');
+    const secondLine = words.slice(splitIndex).join(' ');
+
+    return (
+      <>
+        {firstLine}
+        <br />
+        {secondLine}
+      </>
+    );
+  };
+
   return (
     <div className="grid grid-cols-1 w-full sm:w-fit mx-auto gap-2 mb-6 px-2 sm:px-4">
       {choices?.map((choice, i) => {
@@ -41,7 +68,7 @@ export default function MultipleChoiceRenderer({ question, selected, onSelect, i
             type="button"
             onClick={() => handleChoiceClick(i)}
             disabled={isLocked}
-            className={`relative rounded-3xl border px-6 sm:px-[50px] py-2.5 transition-all duration-150 shadow-sm text-center w-full sm:min-w-[400px] ${buttonClass} ${isLocked ? 'cursor-not-allowed opacity-75' : ''}`}
+            className={`relative rounded-3xl border px-6 sm:px-[50px] py-2.5 transition-all duration-150 shadow-sm text-center w-full sm:min-w-[280px] ${buttonClass} ${isLocked ? 'cursor-not-allowed opacity-75' : ''}`}
           >
             <div className="flex flex-col items-center justify-center min-h-[1.5rem] gap-2">
               {isItemSelected && (
@@ -52,7 +79,9 @@ export default function MultipleChoiceRenderer({ question, selected, onSelect, i
               {isImageUrl(choice) ? (
                 <img src={choice} alt={`Lựa chọn ${i + 1}`} className="max-h-32 rounded-lg object-contain bg-white/50 p-1" />
               ) : (
-                <span className="text-base md:text-lg font-normal tracking-wide sm:whitespace-nowrap">{choice}</span>
+                <span className="text-base md:text-lg font-normal tracking-wide whitespace-pre break-words text-center max-w-[56ch] md:max-w-[72ch] mx-auto">
+                  {renderTwoLineChoiceText(choice)}
+                </span>
               )}
           </div> 
           </button>
