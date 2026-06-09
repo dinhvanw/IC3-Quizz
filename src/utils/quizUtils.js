@@ -219,8 +219,9 @@ export function prepareQuizForMode(quiz, mode) {
   const newQuiz = { ...quiz }
   let questions = Array.isArray(newQuiz.questions) ? [...newQuiz.questions] : []
   if (mode === 'exam') {
-    // Shuffle question order and choices only in exam mode
-    questions = shuffleArray(questions).map(q => shuffleQuestionChoices(q))
+    // Only shuffle choices within questions, NOT the question order itself
+    // This ensures answers[idx] always matches questions[idx] for accurate scoring
+    questions = questions.map(q => shuffleQuestionChoices(q))
   }
   newQuiz.questions = questions
   return newQuiz

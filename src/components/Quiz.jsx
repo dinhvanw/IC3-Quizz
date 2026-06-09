@@ -43,6 +43,7 @@ export default function Quiz({ quiz, mode, onExit }) {
   const [isMapOpen, setIsMapOpen] = useState(false)
   const [isHelpOpen, setIsHelpOpen] = useState(false)
   const [fontSizeClass, setFontSizeClass] = useState('text-lg')
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false)
 
   // Hook useMemo phải được đặt TRƯỚC mọi câu lệnh return có điều kiện
   const timerLabel = useMemo(() => {
@@ -158,14 +159,12 @@ export default function Quiz({ quiz, mode, onExit }) {
       return
     }
 
+    // Exam mode: No feedback shown per question, just move to next or submit
     if (!isLast) {
-      if (answers[index] !== null) {
-        setLocked(prev => { const n = [...prev]; n[index] = true; return n })
-      }
       setIndex(i => i + 1)
-      setShowFeedback(false)
     } else {
-      setFinished(true)
+      // At last question, show submit confirmation dialog
+      setShowSubmitConfirm(true)
     }
   }
 
@@ -309,7 +308,7 @@ export default function Quiz({ quiz, mode, onExit }) {
           </button>
           <button
             onClick={next}
-            disabled={isPractice ? !hasSelection : index === questions.length - 1}
+            disabled={isPractice ? !hasSelection : false}
             className="px-4 sm:px-6 py-1.5 rounded bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white text-xs sm:text-sm font-bold transition shadow-lg shadow-sky-900/20"
           >
             Tiếp
@@ -426,6 +425,41 @@ export default function Quiz({ quiz, mode, onExit }) {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Xác nhận nộp bài (Chỉ chế độ exam) */}
+      {showSubmitConfirm && mode === 'exam' && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-2xl max-w-md w-full mx-4 space-y-6 animate-in zoom-in-95 duration-200">
+            <div className="space-y-2">
+              <h3 className="text-2xl font-bold text-slate-900">Xác nhận nộp bài</h3>
+              <p className="text-slate-600">Bạn có chắc chắn muốn nộp bài thi không?</p>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
+              <span className="text-2xl flex-shrink-0">⚠️</span>
+              <p className="text-sm text-amber-800"><strong>Lưu ý:</strong> Sau khi nộp bài, bạn không thể quay lại sửa câu trả lời. Vui lòng kiểm tra lại trước khi nộp.</p>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  setShowSubmitConfirm(false)
+                  setFinished(true)
+                }}
+                className="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold transition"
+              >
+                Nộp bài
+              </button>
+              <button
+                onClick={() => setShowSubmitConfirm(false)}
+                className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition"
+              >
+                Quay lại làm bài
+              </button>
             </div>
           </div>
         </div>
