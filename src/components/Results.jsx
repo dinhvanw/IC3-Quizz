@@ -138,17 +138,6 @@ export default function Results({ quiz, answers, mode, onRetry, onExit, timedOut
                 )}
               </div>
 
-              {q.explanation && (
-                <div className="mt-4 p-3 bg-white/50 rounded-lg border border-slate-200/50 text-sm">
-                  <p className="font-bold text-slate-600 mb-1 flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Giải thích:
-                  </p>
-                  <div className="text-slate-700 italic leading-relaxed" dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.explanation) }} />
-                </div>
-              )}
             </div>
           );
         })}

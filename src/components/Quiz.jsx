@@ -357,22 +357,6 @@ export default function Quiz({ quiz, mode, onExit }) {
               showCorrect={showCorrect}
             />
 
-            {/* Phần giải thích và báo đúng sai xuất hiện dưới đáp án */}
-            {showCorrect && (
-              <div className={`mt-6 mb-0 py-3 px-5 rounded-xl border animate-in fade-in slide-in-from-bottom-4 duration-300 ${isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`text-xl font-bold ${isCorrect ? 'text-emerald-600' : 'text-rose-600'}`}>
-                    {isCorrect ? '✓ Chính xác!' : '✗ Chưa chính xác'}
-                  </span>
-                </div>
-                {q.explanation && (
-                  <div className="text-slate-700 text-sm leading-relaxed border-t border-slate-200 pt-3">
-                    <span className="font-bold text-slate-900">Giải thích: </span>
-                    {q.explanation}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>

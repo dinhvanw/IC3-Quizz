@@ -87,11 +87,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
           {/* Cột 1 (Lựa chọn bên trái) - Chiếm 3/12 cột */}
-          <div className="lg:col-span-3 space-y-3">
-            <h4 className="text-sm font-black uppercase text-slate-400 tracking-[0.2em] mb-2 pb-1 border-b border-slate-100">
-              Lựa chọn
-            </h4>
-
+          <div className="lg:col-span-3">
             <div
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDropBack}
@@ -106,8 +102,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                       key={lIdx}
                       className="p-3 border border-dashed border-slate-300 bg-slate-100/50 text-lg font-semibold text-center rounded-none select-none opacity-50 relative overflow-hidden"
                     >
-                      <span className="line-clamp-2">{textItem}</span>
-                      <span className="absolute bottom-1 right-2 text-[8px] uppercase tracking-wider font-black text-slate-400">Đã đặt</span>
+                      <span className="text-center whitespace-normal break-words max-w-[15ch] mx-auto">{textItem}</span>
                     </div>
                   );
                 }
@@ -117,12 +112,12 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                     key={lIdx}
                     draggable={!isLocked}
                     onDragStart={(e) => handleDragStart(e, lIdx)}
-                    className={`flex items-center justify-between p-3 bg-[#E0E0E0] text-slate-800 font-semibold text-base rounded-none border border-slate-300 shadow-sm transition-all select-none ${isLocked
+                    className={`flex items-center justify-center p-3 bg-[#E0E0E0] text-slate-800 font-semibold text-base rounded-none border border-slate-300 shadow-sm transition-all select-none ${isLocked
                       ? 'cursor-not-allowed opacity-60'
                       : 'cursor-grab active:cursor-grabbing hover:bg-[#D0D0D0] hover:shadow-md'
                       }`}
                   >
-                    <span className="flex-1 pr-2 break-words line-clamp-2">{textItem}</span>
+                    <span className="text-center whitespace-normal break-words max-w-[15ch]">{textItem}</span>
                     <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4V20M12 4L9 7M12 4L15 7M12 20L9 17M12 20L15 17M4 12H20M4 12L7 9M4 12L7 15M20 12L17 9M20 12L17 15" />
                     </svg>
@@ -132,7 +127,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
 
               {leftItems && pairs.length === leftItems.length && (
                 <div className="flex items-center justify-center h-48 text-slate-400 italic text-xs text-center p-4">
-                  Đã kéo hết các lựa chọn!
+                  {/* Tất cả lựa chọn đã được kéo */}
                 </div>
               )}
             </div>
@@ -140,11 +135,6 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
 
           {/* Cột 2 & 3 (Ô thả & Mô tả ở giữa và bên phải) - Chiếm 9/12 cột */}
           <div className="lg:col-span-9 space-y-3">
-            <div className="grid grid-cols-2 gap-4 pb-1 border-b border-slate-100 font-black uppercase text-slate-400 tracking-[0.2em] text-[10px]">
-              <div className="text-sm">Ô thả (Drop Zone)</div>
-              <div>Mô tả cố định (Target)</div>
-            </div>
-
             <div className="space-y-3">
               {rightItems?.map((targetItem, rIdx) => {
                 const matchedLeftIndices = pairs.filter(p => p.r === rIdx).map(p => p.l);
@@ -173,7 +163,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                               onDragStart={(e) => handleDragStart(e, lIdx)}
                               className="flex items-center justify-between p-2.5 bg-[#0B72B9] text-white font-semibold text-base rounded-none border border-blue-600 shadow-sm relative group cursor-grab active:cursor-grabbing hover:bg-[#09609c] transition-all"
                             >
-                              <span className="flex-1 pr-6 break-words">{text}</span>
+                              <span className="flex-1 pr-6 text-center whitespace-normal break-words max-w-[15ch] mx-auto">{text}</span>
 
                               <div className="flex items-center gap-2 shrink-0">
                                 {!isLocked && (
@@ -208,7 +198,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                       {isImageUrl(targetItem) ? (
                         <img src={targetItem} alt={`Hình ảnh ${rIdx + 1}`} className="max-h-24 max-w-full rounded object-contain" />
                       ) : (
-                        <span className="break-words line-clamp-3 leading-snug">{targetItem}</span>
+                        <span className="break-words whitespace-normal text-center max-w-[15ch] leading-snug">{targetItem}</span>
                       )}
                     </div>
 
@@ -257,7 +247,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                             className={`flex items-center justify-between p-2.5 text-white font-semibold text-base rounded-none shadow-sm relative transition-all ${isCorrect ? 'bg-[#006F28]' : 'bg-[#C84B31]'
                               }`}
                           >
-                            <span className="flex-1 pr-6 break-words">{text}</span>
+                            <span className="flex-1 pr-6 text-center whitespace-normal break-words max-w-[15ch] mx-auto">{text}</span>
 
                             <span className="w-5 h-5 rounded-full border border-white flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow-inner">
                               {isCorrect ? '✓' : '✕'}
@@ -280,7 +270,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                     {isImageUrl(targetItem) ? (
                       <img src={targetItem} alt={`Hình ảnh ${rIdx + 1}`} className="max-h-24 max-w-full rounded object-contain" />
                     ) : (
-                      <span className="break-words line-clamp-3 leading-snug">{targetItem}</span>
+                      <span className="break-words whitespace-normal text-center max-w-[15ch] leading-snug">{targetItem}</span>
                     )}
                   </div>
 
@@ -294,7 +284,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                             key={lIdx}
                             className="flex items-center justify-center p-2.5 bg-[#006F28] text-white font-semibold text-base rounded-none shadow-sm text-center h-full min-h-[42px]"
                           >
-                            {text}
+                            <span className="break-words whitespace-normal max-w-[15ch]">{text}</span>
                           </div>
                         );
                       })
@@ -309,15 +299,6 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
         </div>
       )}
 
-      {/* Reset Button */}
-      {pairs.length > 0 && !isLocked && !showCorrect && (
-        <button
-          onClick={() => onSelect([])}
-          className="text-xs text-rose-500 font-bold hover:underline"
-        >
-          Xóa các cặp đã nối
-        </button>
-      )}
     </div>
   );
 }
