@@ -29,8 +29,16 @@ export function checkAnswer(userAnswer, question) {
     case 'questionBox':
       if (Array.isArray(userAnswer)) {
         const correctPairs = question.correctPairs || []
-        const normalizedCorrect = correctPairs.map(p => Array.isArray(p) ? { l: p[0], r: p[1] } : p)
-        const sortedUser = [...userAnswer].sort((a, b) => a.l - b.l || a.r - b.r)
+        const normalizePair = (p) => {
+          const pair = Array.isArray(p) ? { l: p[0], r: p[1] } : p
+          return {
+            l: Number(pair.l),
+            r: Number(pair.r)
+          }
+        }
+        const normalizedCorrect = correctPairs.map(normalizePair)
+        const normalizedUser = userAnswer.map(normalizePair)
+        const sortedUser = [...normalizedUser].sort((a, b) => a.l - b.l || a.r - b.r)
         const sortedCorrect = [...normalizedCorrect].sort((a, b) => a.l - b.l || a.r - b.r)
         return JSON.stringify(sortedUser) === JSON.stringify(sortedCorrect)
       }
@@ -74,6 +82,7 @@ export function checkAnswer(userAnswer, question) {
  */
 export function formatAnswer(val, question) {
   if (val === null || val === undefined || val === '') return 'Chưa chọn'
+  if (Array.isArray(val) && val.length === 0) return 'Chưa chọn'
   if (question.type === 'multiple_select' || question.type === 'multiple') {
     return Array.isArray(val) ? val.map(i => String.fromCharCode(65 + i)).join(', ') : 'Lỗi dữ liệu'
   }
@@ -84,6 +93,16 @@ export function formatAnswer(val, question) {
   }
   if (question.type === 'matching' || question.type === 'questionBox') {
     if (typeof val === 'object' && !Array.isArray(val)) return 'Đã hoàn thành nối cặp'
+    if (Array.isArray(val)) {
+      const leftItems = question.leftItems || []
+      const rightItems = question.rightItems || []
+      return val.map(pair => {
+        const left = leftItems[Number(pair.l)] || `Mục ${pair.l}`
+        const right = rightItems[Number(pair.r)] || `Mục ${pair.r}`
+        const rightText = typeof right === 'string' && (right.startsWith('http') || right.startsWith('data:image')) ? `Ảnh ${Number(pair.r) + 1}` : right
+        return `${left} ↔ ${rightText}`
+      }).join(', ')
+    }
     return `Đã nối ${val.length} cặp`
   }
   if (question.type === 'hotspot') {
