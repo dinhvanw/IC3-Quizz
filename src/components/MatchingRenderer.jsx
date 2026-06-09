@@ -99,7 +99,7 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                 if (isPlaced) {
                   return (
                     <div
-                      key={lIdx}
+                      key={lIdx} 
                       className="p-3 border border-dashed border-slate-300 bg-slate-100/50 text-lg font-semibold text-center rounded-none select-none opacity-50 relative overflow-hidden"
                     >
                       <span className="text-center whitespace-normal break-words max-w-[15ch] mx-auto">{textItem}</span>
@@ -111,13 +111,13 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                   <div
                     key={lIdx}
                     draggable={!isLocked}
-                    onDragStart={(e) => handleDragStart(e, lIdx)}
-                    className={`flex items-center justify-center p-3 bg-[#E0E0E0] text-slate-800 font-semibold text-base rounded-none border border-slate-300 shadow-sm transition-all select-none ${isLocked
+                    onDragStart={(e) => handleDragStart(e, lIdx)} 
+                    className={`flex items-center justify-center p-3 bg-[#E0E0E0] text-slate-800 text-base rounded-none border border-slate-300 shadow-sm transition-all select-none ${isLocked
                       ? 'cursor-not-allowed opacity-60'
                       : 'cursor-grab active:cursor-grabbing hover:bg-[#D0D0D0] hover:shadow-md'
                       }`}
                   >
-                    <span className="text-center whitespace-normal break-words max-w-[15ch]">{textItem}</span>
+                    <span className="text-center whitespace-normal break-words overflow-hidden line-clamp-2">{textItem}</span>
                     <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4V20M12 4L9 7M12 4L15 7M12 20L9 17M12 20L15 17M4 12H20M4 12L7 9M4 12L7 15M20 12L17 9M20 12L17 15" />
                     </svg>
@@ -161,9 +161,9 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                               key={lIdx}
                               draggable={!isLocked}
                               onDragStart={(e) => handleDragStart(e, lIdx)}
-                              className="flex items-center justify-between p-2.5 bg-[#0B72B9] text-white font-semibold text-base rounded-none border border-blue-600 shadow-sm relative group cursor-grab active:cursor-grabbing hover:bg-[#09609c] transition-all"
-                            >
-                              <span className="flex-1 pr-6 text-center whitespace-normal break-words max-w-[15ch] mx-auto">{text}</span>
+                              className="flex items-center justify-between p-2.5 bg-[#0B72B9] text-white text-base rounded-none border border-blue-600 shadow-sm relative group cursor-grab active:cursor-grabbing hover:bg-[#09609c] transition-all"
+                            > 
+                              <span className="flex-1 pr-6 text-center whitespace-normal break-words mx-auto">{text}</span>
 
                               <div className="flex items-center gap-2 shrink-0">
                                 {!isLocked && (
@@ -194,11 +194,11 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                     </div>
 
                     {/* Cột 3: Mô tả cố định */}
-                    <div className="flex-1 flex items-center p-3 bg-slate-50 text-slate-800 font-semibold text-xs rounded-none shadow-sm min-h-[64px] border border-slate-200 justify-center text-center">
+                    <div className="flex-1 flex items-center py-3 px-5 bg-slate-50 text-slate-800 text-base rounded-none shadow-sm min-h-[64px] border border-slate-200 justify-center text-center">
                       {isImageUrl(targetItem) ? (
-                        <img src={targetItem} alt={`Hình ảnh ${rIdx + 1}`} className="max-h-24 max-w-full rounded object-contain" />
+                        <img src={targetItem} alt={`Hình ảnh ${rIdx + 1}`} className="max-h-24 max-w-full rounded object-contain" /> 
                       ) : (
-                        <span className="break-words whitespace-normal text-center max-w-[15ch] leading-snug">{targetItem}</span>
+                        <span className="break-words whitespace-normal text-center">{targetItem}</span>
                       )}
                     </div>
 
@@ -246,8 +246,8 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                             key={lIdx}
                             className={`flex items-center justify-between p-2.5 text-white font-semibold text-base rounded-none shadow-sm relative transition-all ${isCorrect ? 'bg-[#006F28]' : 'bg-[#C84B31]'
                               }`}
-                          >
-                            <span className="flex-1 pr-6 text-center whitespace-normal break-words max-w-[15ch] mx-auto">{text}</span>
+                          > 
+                            <span className="flex-1 pr-6 text-center whitespace-normal break-words mx-auto overflow-hidden line-clamp-2">{text}</span>
 
                             <span className="w-5 h-5 rounded-full border border-white flex items-center justify-center text-[10px] font-black text-white shrink-0 shadow-inner">
                               {isCorrect ? '✓' : '✕'}
@@ -266,25 +266,25 @@ export default function MatchingRenderer({ question, selected, onSelect, isLocke
                   </div>
 
                   {/* Cột 2: Mô tả cố định */}
-                  <div className="flex items-center p-3 bg-slate-50 text-slate-800 font-semibold text-xs rounded-none shadow-sm border border-slate-200 justify-center text-center select-none" style={{ minHeight: '52px' }}>
+                  <div className="flex items-center py-3 px-5 bg-slate-50 text-slate-800 font-semibold text-base rounded-none shadow-sm border border-slate-200 justify-center text-center select-none" style={{ minHeight: '52px' }}>
                     {isImageUrl(targetItem) ? (
                       <img src={targetItem} alt={`Hình ảnh ${rIdx + 1}`} className="max-h-24 max-w-full rounded object-contain" />
                     ) : (
-                      <span className="break-words whitespace-normal text-center max-w-[15ch] leading-snug">{targetItem}</span>
+                      <span className="break-words whitespace-normal text-center">{targetItem}</span>
                     )}
                   </div>
 
                   {/* Cột 3: Đáp án đúng (Correct Answers) - Chỉ hiển thị khi làm sai */}
                   <div className="flex flex-col justify-center gap-2">
                     {!isRowCorrect && correctLeftIndices.length > 0 ? (
-                      correctLeftIndices.map(lIdx => {
+                      correctLeftIndices.map(lIdx => { 
                         const text = leftItems[lIdx];
                         return (
                           <div
                             key={lIdx}
                             className="flex items-center justify-center p-2.5 bg-[#006F28] text-white font-semibold text-base rounded-none shadow-sm text-center h-full min-h-[42px]"
                           >
-                            <span className="break-words whitespace-normal max-w-[15ch]">{text}</span>
+                            <span className="break-words whitespace-normal">{text}</span>
                           </div>
                         );
                       })

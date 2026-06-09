@@ -64,16 +64,24 @@ export function checkAnswer(userAnswer, question) {
     case 'TRUE_FALSE_MATRIX':
     case 'table':
       if (!userAnswer || typeof userAnswer !== 'object') return false
+      const rows = question.rows || question.devices || []
+      const cols = question.columns || question.labels || []
+
       if (Array.isArray(question.answer)) {
-        const rows = question.rows || []
-        const labels = question.labels || []
-        return rows.every((r, i) => labels[userAnswer[i]] === question.answer[i])
+        return rows.every((r, i) => {
+          const userColLabel = cols[userAnswer[i]]?.toString().toLowerCase()
+          const correctColLabel = question.answer[i]?.toString().toLowerCase()
+          return userColLabel === correctColLabel
+        })
       }
       const rowKeys = Object.keys(question.answer || {})
       return rowKeys.length > 0 && rowKeys.every(key => userAnswer[key] === question.answer[key])
     default:
-      if (question.type === 'single') return userAnswer === question.answer
-      return userAnswer === question.answer
+      // For single choice questions, compare values. Convert to lowercase for string comparison.
+      if (question.type === 'single' || question.type === 'multiple_choice') {
+        return typeof userAnswer === 'string' && typeof question.answer === 'string' ? userAnswer.toLowerCase() === question.answer.toLowerCase() : userAnswer === question.answer;
+      }
+      return userAnswer === question.answer // Fallback, should ideally be covered by specific types
   }
 }
 
@@ -146,30 +154,53 @@ function shuffleQuestionChoices(question) {
   if (!question) return question
   const q = { ...question }
 
-  // Handle matrix-like questions: shuffle columns
+  // Handle matrix-like questions: shuffle both columns and rows
+  // Handle matrix-like questions: shuffle both columns and rows
   const matrixTypes = ['matrix_radio', 'TRUE_FALSE_MATRIX', 'table']
   if (matrixTypes.includes(q.type)) {
-    const origCols = Array.isArray(q.columns) ? q.columns : []
-    if (origCols.length === 0) return q
-    const indices = origCols.map((_, i) => i)
-    const shuffled = shuffleArray(indices)
-    q.columns = shuffled.map(i => origCols[i])
-    const indexMap = remapIndexMap(origCols.length, shuffled)
-    
-    // Remap answer object keys (from column index to new column index)
-    if (q.answer && typeof q.answer === 'object' && !Array.isArray(q.answer)) {
-      const newAnswer = {}
-      Object.keys(q.answer).forEach(rowId => {
-        const oldColIdx = q.answer[rowId]
-        newAnswer[rowId] = indexMap[oldColIdx] ?? oldColIdx
-      })
-      q.answer = newAnswer
+    let shuffledRowIndices = null;
+
+    // Shuffle rows if they exist
+    if (Array.isArray(q.rows)) {
+  
+      const origRows = [...q.rows];
+      const rowIndices = origRows.map((_, i) => i);
+      shuffledRowIndices = shuffleArray(rowIndices);
+      q.rows = shuffledRowIndices.map(i => origRows[i]);
+    } else if (Array.isArray(q.devices)) {
+     
+      const origDevices = [...q.devices];
+      const deviceIndices = origDevices.map((_, i) => i);
+      shuffledRowIndices = shuffleArray(deviceIndices);
+      q.devices = shuffledRowIndices.map(i => origDevices[i]);
     }
-    return q
+
+    // If rows were shuffled AND the answer is an array of labels (TRUE_FALSE_MATRIX specific)
+    if (shuffledRowIndices && Array.isArray(q.answer) && q.type === 'TRUE_FALSE_MATRIX') {
+      const originalAnswerArray = [...q.answer];
+      const newAnswerArray = new Array(originalAnswerArray.length);
+      shuffledRowIndices.forEach((oldRowIdx, newRowIdx) => {
+        newAnswerArray[newRowIdx] = originalAnswerArray[oldRowIdx];
+      });
+      q.answer = newAnswerArray;
+    }
   }
 
-  // Handle matching questions: shuffle rightItems and remap correctPairs.r
+
+  // Handle matching questions: shuffle both leftItems and rightItems
   if (q.type === 'matching' || q.type === 'questionBox') {
+    // Shuffle leftItems and remap correctPairs.l
+    const origLeft = Array.isArray(q.leftItems) ? q.leftItems : (Array.isArray(q.left) ? q.left : [])
+    if (origLeft.length > 0) {
+      const lIndices = origLeft.map((_, i) => i)
+      const lShuffled = shuffleArray(lIndices)
+      q.leftItems = lShuffled.map(i => origLeft[i])
+      const lIndexMap = remapIndexMap(origLeft.length, lShuffled)
+      if (Array.isArray(q.correctPairs)) {
+        q.correctPairs = q.correctPairs.map(p => ({ l: lIndexMap[p.l] ?? p.l, r: p.r }))
+      }
+    }
+
     const origRight = Array.isArray(q.rightItems) ? q.rightItems : []
     if (origRight.length === 0) return q
     const indices = origRight.map((_, i) => i)
@@ -214,15 +245,30 @@ function shuffleQuestionChoices(question) {
   return q
 }
 
-export function prepareQuizForMode(quiz, mode) {
+function remapAnswersArray(originalAnswers, shuffledIndices) {
+  if (!Array.isArray(originalAnswers) || originalAnswers.length === 0) {
+    return originalAnswers;
+  }
+  const newAnswers = new Array(originalAnswers.length);
+  shuffledIndices.forEach((oldIdx, newIdx) => {
+    newAnswers[newIdx] = originalAnswers[oldIdx];
+  });
+  return newAnswers;
+}
+
+export function prepareQuizForMode(quiz, mode, currentAnswers = []) { // Add currentAnswers parameter
   if (!quiz) return quiz
   const newQuiz = { ...quiz }
   let questions = Array.isArray(newQuiz.questions) ? [...newQuiz.questions] : []
+  let reorderedAnswers = [...currentAnswers]; // Make a copy of currentAnswers
   if (mode === 'exam') {
-    // Only shuffle choices within questions, NOT the question order itself
-    // This ensures answers[idx] always matches questions[idx] for accurate scoring
+    const questionIndices = questions.map((_, i) => i);
+    const shuffledQuestionIndices = shuffleArray(questionIndices);
+    questions = shuffledQuestionIndices.map(i => questions[i]);
+    reorderedAnswers = remapAnswersArray(currentAnswers, shuffledQuestionIndices);
+    // Shuffle choices within each question
     questions = questions.map(q => shuffleQuestionChoices(q))
   }
-  newQuiz.questions = questions
-  return newQuiz
+  newQuiz.questions = questions;
+  return { newQuiz, reorderedAnswers }; // Return both
 }

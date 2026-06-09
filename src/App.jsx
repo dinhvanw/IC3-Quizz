@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Quiz from './components/Quiz'
 import History from './components/History'
 import Results from './components/Results'
+import { prepareQuizForMode } from './utils/quizUtils'
 import { fetchAllQuizzes } from './services/quizService'
 
 const modeOptions = [
@@ -13,6 +14,8 @@ const modeOptions = [
 export default function App(){
   const navigate = useNavigate()
   const [selectedQuiz, setSelectedQuiz] = useState(null)
+  const [preparedQuiz, setPreparedQuiz] = useState(null) // New state for the quiz after shuffling
+  const [userAnswers, setUserAnswers] = useState([]) // New state for user answers
   const [selectedMode, setSelectedMode] = useState(null)
   const [quizzes, setQuizzes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -48,6 +51,15 @@ export default function App(){
     loadQuizzes()
   }, [])
 
+  // Effect to prepare the quiz for the selected mode
+  useEffect(() => {
+    if (selectedQuiz && selectedMode) {
+      const { newQuiz, reorderedAnswers } = prepareQuizForMode(selectedQuiz, selectedMode, userAnswers);
+      setPreparedQuiz(newQuiz);
+      setUserAnswers(reorderedAnswers);
+    }
+  }, [selectedQuiz, selectedMode]); // Only re-prepare when quiz or mode changes
+
   function handleStartPractice() {
     if (quizzes.length === 0) return
 
@@ -60,8 +72,8 @@ export default function App(){
       duration: quizzes.reduce((acc, q) => acc + (q.duration || 0), 0),
       questions: allQuestions
     }
-    setSelectedMode('practice')
-    setSelectedQuiz(combinedQuiz)
+    setSelectedMode('practice');
+    setSelectedQuiz(combinedQuiz); // This will trigger the useEffect above
   }
 
   function handleStartExam() {
@@ -76,12 +88,13 @@ export default function App(){
       duration: quizzes.reduce((acc, q) => acc + (q.duration || 0), 0),
       questions: allQuestions
     }
-    setSelectedMode('exam')
-    setSelectedQuiz(combinedQuiz)
+    setSelectedMode('exam');
+    setSelectedQuiz(combinedQuiz); // This will trigger the useEffect above
   }
 
   function resetSelection(){
     setSelectedQuiz(null)
+    setPreparedQuiz(null) // Reset prepared quiz
     setSelectedMode(null)
   }
 
@@ -253,8 +266,16 @@ export default function App(){
               </div>
             )}
           </section>
+        ) : preparedQuiz ? ( // Render Quiz only if preparedQuiz is available
+          <Quiz 
+            quiz={preparedQuiz} 
+            mode={selectedMode} 
+            onExit={resetSelection}
+            initialAnswers={userAnswers} // Pass reordered answers
+            onAnswerChange={setUserAnswers} // Pass a setter for answers
+          />
         ) : (
-          <Quiz quiz={selectedQuiz} mode={selectedMode} onExit={resetSelection} />
+          <div className="text-center p-10">Đang tải câu hỏi...</div> // Loading state
         )}
       </main>
     </div>

@@ -8,27 +8,31 @@ export default function Results({ quiz, answers, mode, onRetry, onExit, timedOut
     const choices = q.choices || q.options || [];
     const columns = q.columns || q.labels || [];
     const rows = q.rows || q.devices || [];
+    
+    // Ensure all text is lowercase for comparison and display consistency
+    const toLower = (text) => (text || '').toString().toLowerCase();
+    const formatItem = (item) => (typeof item === 'string' && (item.startsWith('http') || item.startsWith('data:image'))) ? `[Ảnh ${item}]`.toLowerCase() : toLower(item);
 
     switch (q.type) {
       case 'multiple_choice':
       case 'single':
-        return choices[q.answer] || q.answer;
+        return toLower(choices[q.answer] || q.answer);
       case 'multiple_select':
       case 'multiple':
-        if (q.correctAnswers) return q.correctAnswers.map(i => choices[i]).join(', ');
-        return Array.isArray(q.answer) ? q.answer.join(', ') : q.answer;
+        if (q.correctAnswers) return q.correctAnswers.map(i => toLower(choices[i])).join(', ');
+        return Array.isArray(q.answer) ? q.answer.map(a => toLower(a)).join(', ') : toLower(q.answer);
       case 'fill_blank':
-        return q.answer;
+        return toLower(q.answer);
       case 'TRUE_FALSE_MATRIX':
       case 'matrix_radio':
       case 'table':
-        if (Array.isArray(q.answer)) {
-          return rows.map((row, i) => `${row.text || row}: ${q.answer[i]}`).join(' | ');
+        if (Array.isArray(q.answer)) { // For TRUE_FALSE_MATRIX where answer is an array of labels
+          return rows.map((row, i) => `${toLower(row?.text || row)}: ${toLower(q.answer[i])}`).join(' | ');
         }
         return rows?.map(row => {
           const correctColIdx = q.answer?.[row.id];
-          const colName = columns[correctColIdx];
-          return `${row.text || row}: ${colName}`;
+          const colName = toLower(columns[correctColIdx]);
+          return `${toLower(row?.text || row?.name || row)}: ${colName}`;
         }).join(' | ');
       case 'matching':
       case 'questionBox':
@@ -36,10 +40,10 @@ export default function Results({ quiz, answers, mode, onRetry, onExit, timedOut
           return Object.entries(q.answer).map(([k, v]) => `${k} ↔ ${v}`).join(', ');
         }
         return (q.correctPairs || []).map(p => {
-          const left = q.leftItems[p.l];
-          const right = q.rightItems[p.r];
-          const rightText = (typeof right === 'string' && (right.startsWith('http') || right.startsWith('data:image'))) ? `[Ảnh ${p.r + 1}]` : right;
-          return `${left} ↔ ${rightText}`;
+          const left = toLower(q.leftItems[p.l]);
+          const right = toLower(q.rightItems[p.r]);
+          const rightText = formatItem(q.rightItems[p.r]);
+          return `${left} ↔ ${rightText}`.toLowerCase();
         }).join(', ');
       case 'drag_drop':
       case 'reorder':
@@ -55,6 +59,10 @@ export default function Results({ quiz, answers, mode, onRetry, onExit, timedOut
   };
 
   const questions = quiz?.questions || [];
+  // IMPORTANT: The 'answers' prop is expected to be an array of user answers
+  // that is already reordered to match the 'questions' array in 'quiz'.
+  // This reordering should happen in the component that calls prepareQuizForMode.
+  // For example, in a 'useQuiz' hook or 'QuizPage' component.
   
   // Tính toán số câu đúng an toàn hơn
   const correctCount = React.useMemo(() => {
@@ -115,7 +123,7 @@ export default function Results({ quiz, answers, mode, onRetry, onExit, timedOut
             <div key={idx} className={`p-4 rounded-xl border ${isCorrect ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}>
               <div className="flex flex-col md:flex-row gap-4 mb-4">
                 <div className="flex-1">
-                  <p className="text-lg font-medium text-slate-800 mb-2">
+                  <p className="text-xl font-medium text-slate-800 mb-2">
                     <span className="font-bold">Câu {idx + 1}:</span> <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.text) }} />
                   </p>
                 </div>

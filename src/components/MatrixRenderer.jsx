@@ -83,14 +83,14 @@ export default function MatrixRenderer({ question, selected, onSelect, isLocked,
           </div>
           {colData.map((col, idx) => (
             <div key={idx} className="w-16 sm:w-24 flex-shrink-0 p-2 text-center border-l border-slate-200 bg-[rgb(2,132,199)] text-white flex items-center justify-center font-bold text-base tracking-tighter leading-tight">
-              {formatTitle(col)}
+              {formatTitle(col)} 
             </div>
           ))}
         </div>
 
         {rowData.map((row) => (
           <div key={row.id} className="flex items-stretch border-b border-gray-200 transition-colors hover:bg-slate-50">
-            <div className="flex-1 p-4 text-gray-700 text-lg font-medium leading-relaxed">
+            <div className="flex-1 p-4 text-gray-700 text-lg leading-relaxed">
               <HtmlInline content={row.name || row.text} />
             </div>
             {colData.map((_, colIdx) => renderCell(row.id, colIdx, true))}
