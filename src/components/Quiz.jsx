@@ -121,7 +121,7 @@ export default function Quiz({ quiz, mode, onExit }) {
   }
 
   function canGoBack() {
-    return mode === 'practice' || reviewMode
+    return true
   }
 
   function startReview() {
@@ -179,9 +179,6 @@ export default function Quiz({ quiz, mode, onExit }) {
   }
 
   function prev() {
-    // Trong chế độ kiểm tra, không cho phép quay lại câu trước đó
-    if (!canGoBack()) return
-    
     if (index > 0) {
       setIndex(i => i - 1)
       setShowFeedback(false)
