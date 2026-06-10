@@ -228,7 +228,7 @@ export default function Quiz({ quiz, mode, onExit }) {
           setTimedOut(false)
         }}
         onExit={onExit}
-        onReview={mode === 'exam' ? startReview : null}
+        onReview={startReview}
       />
     )
   }

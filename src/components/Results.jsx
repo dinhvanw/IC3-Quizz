@@ -137,7 +137,7 @@ export default function Results({ quiz, answers, mode, onRetry = null, onExit = 
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        {mode === 'exam' && typeof onReview === 'function' && (
+        {typeof onReview === 'function' && (
           <button
             onClick={onReview}
             className="px-8 py-3 bg-sky-600 text-white rounded-xl font-bold hover:bg-sky-500 transition shadow-lg text-base"
