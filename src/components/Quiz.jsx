@@ -423,21 +423,30 @@ export default function Quiz({ quiz, mode, onExit }) {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
-                  <div className="grid grid-cols-3 gap-2 mb-6 text-[10px] font-bold text-center">
-                    <div className="p-2 rounded bg-sky-100 text-sky-700">Đã trả lời</div>
-                    <div className="p-2 rounded bg-amber-100 text-amber-700">Xem lại</div>
+                  <div className="grid grid-cols-4 gap-2 mb-6 text-[10px] font-bold text-center">
+                    <div className="p-2 rounded bg-emerald-100 text-emerald-700">Đúng</div>
+                    <div className="p-2 rounded bg-rose-100 text-rose-700">Sai</div>
                     <div className="p-2 rounded bg-slate-200 text-slate-700">Chưa làm</div>
+                    <div className="p-2 rounded border border-amber-300 bg-amber-50 text-amber-700">Đánh dấu</div>
                   </div>
 
                   <div className="grid grid-cols-5 gap-3">
                     {questions.map((_, qIdx) => {
-                      const isAnswered = answers[qIdx] !== null && answers[qIdx] !== undefined && answers[qIdx] !== '';
-                      const isMarked = marked[qIdx];
-                      const isCurrent = index === qIdx;
+                      const answer = answers[qIdx]
+                      const isMarked = marked[qIdx]
+                      const isCurrent = index === qIdx
+                      const isUnanswered = answer === null || answer === undefined || answer === ''
+                      const status = isUnanswered ? 'unanswered' : checkAnswer(answer, questions[qIdx]) ? 'correct' : 'incorrect'
 
-                      let bgClass = "bg-slate-100 border-slate-200 text-slate-700";
-                      if (isAnswered) bgClass = "bg-sky-500 border-sky-600 text-white shadow-sm";
-                      if (isMarked) bgClass = "bg-amber-500 border-amber-600 text-white shadow-sm";
+                      let bgClass = "bg-slate-100 border-slate-200 text-slate-700"
+                      if (status === 'correct') bgClass = "bg-emerald-500 border-emerald-600 text-white shadow-sm"
+                      if (status === 'incorrect') bgClass = "bg-rose-500 border-rose-600 text-white shadow-sm"
+                      const markClass = isMarked ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-white' : ''
+
+                      const titleParts = []
+                      if (isMarked) titleParts.push('Đánh dấu')
+                      if (isUnanswered) titleParts.push('Chưa làm')
+                      else titleParts.push(status === 'correct' ? 'Đúng' : 'Sai')
 
                       return (
                         <button
@@ -446,12 +455,12 @@ export default function Quiz({ quiz, mode, onExit }) {
                             setIndex(qIdx);
                             setIsMapOpen(false);
                           }}
-                          className={`w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm transition-all hover:scale-105 active:scale-95 ${bgClass} ${isCurrent ? 'ring-4 ring-offset-2 ring-blue-500' : ''
-                            }`}
+                          title={titleParts.join(' - ')}
+                          className={`w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm transition-all hover:scale-105 active:scale-95 ${bgClass} ${markClass} ${isCurrent ? 'ring-4 ring-offset-2 ring-blue-500' : ''}`}
                         >
                           {qIdx + 1}
                         </button>
-                      );
+                      )
                     })}
                   </div>
                 </div>
