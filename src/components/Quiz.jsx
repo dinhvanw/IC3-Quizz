@@ -38,6 +38,7 @@ export default function Quiz({ quiz, mode, onExit }) {
   const [remaining, setRemaining] = useState(quiz.duration * 60)
   const [timedOut, setTimedOut] = useState(false);
   const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false)
+  const [reviewMode, setReviewMode] = useState(false)
 
   // Các state tiện ích mới
   const [isMapOpen, setIsMapOpen] = useState(false)
@@ -120,7 +121,13 @@ export default function Quiz({ quiz, mode, onExit }) {
   }
 
   function canGoBack() {
-    return true
+    return mode === 'practice' || reviewMode
+  }
+
+  function startReview() {
+    setReviewMode(true)
+    setShowFeedback(true)
+    setLocked(Array(questions.length).fill(true))
   }
 
   function resetQuestion() {
@@ -206,7 +213,7 @@ export default function Quiz({ quiz, mode, onExit }) {
 
 
 
-  if (finished) {
+  if (finished && !reviewMode) {
     return (
       <Results
         quiz={quiz}
@@ -219,10 +226,12 @@ export default function Quiz({ quiz, mode, onExit }) {
           setMaxIndex(0);
           setFinished(false);
           setShowFeedback(false);
+          setReviewMode(false);
           setRemaining(quiz.duration * 60);
           setTimedOut(false)
         }}
         onExit={onExit}
+        onReview={mode === 'exam' ? startReview : null}
       />
     )
   }
@@ -240,7 +249,7 @@ export default function Quiz({ quiz, mode, onExit }) {
   // Now we are sure that 'questions' array is not empty and 'quiz' is defined
   const q = questions[index]
   const selected = answers[index]
-  const isPractice = mode === 'practice'
+  const isPractice = mode === 'practice' || reviewMode
   const hasSelection = selected !== null && selected !== undefined && (Array.isArray(selected) ? selected.length > 0 : selected !== '')
   const isCorrect = hasSelection && checkAnswer(selected, q)
   const showCorrect = isPractice && (showFeedback || locked[index])
@@ -253,7 +262,7 @@ export default function Quiz({ quiz, mode, onExit }) {
           <button
             onClick={prev}
             disabled={index === 0 || !canGoBack()}
-            title={mode === 'exam' ? 'Không thể quay lại trong chế độ kiểm tra' : ''}
+            title={!canGoBack() ? 'Không thể quay lại trong chế độ hiện tại' : ''}
             className={`px-2 sm:px-4 py-1.5 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-medium transition ${(index > 0 && canGoBack()) ? 'bg-blue-600 hover:bg-blue-500' : 'bg-slate-800 hover:bg-slate-700'
               }`}
           >

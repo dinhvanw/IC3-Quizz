@@ -115,43 +115,36 @@ export default function Results({ quiz, answers, mode, onRetry, onExit, timedOut
       </div>
 
       <div className="space-y-4 mb-10">
-        <h3 className="font-bold text-slate-800 border-b pb-2">Chi tiết câu trả lời</h3>
-        {questions.map((q, idx) => {
-          // Thêm kiểm tra an toàn cho mảng answers
-          const isCorrect = checkAnswer(answers ? answers[idx] : null, q);
-          return (
-            <div key={idx} className={`p-4 rounded-xl border ${isCorrect ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}>
-              <div className="flex flex-col md:flex-row gap-4 mb-4">
-                <div className="flex-1">
-                  <p className="text-xl font-medium text-slate-800 mb-2">
-                    <span className="font-bold">Câu {idx + 1}:</span> <span dangerouslySetInnerHTML={{ __html: sanitizeHtml(q.text) }} />
-                  </p>
+        <h3 className="font-bold text-slate-800 border-b pb-2">Tổng quan bài thi</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {questions.map((q, idx) => {
+            const isCorrect = checkAnswer(answers ? answers[idx] : null, q);
+            return (
+              <div
+                key={idx}
+                className={`p-4 rounded-2xl border shadow-sm ${isCorrect ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-semibold text-slate-800">Câu {idx + 1}</span>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${isCorrect ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`}>
+                    {isCorrect ? 'Đúng' : 'Sai'}
+                  </span>
                 </div>
-                {q.image && (
-                  <div className="w-full md:w-48 h-32 flex-shrink-0 bg-white rounded-lg border border-slate-200 overflow-hidden">
-                    <img src={q.image} alt="Question" className="w-full h-full object-contain" />
-                  </div>
-                )}
               </div>
-
-              <div className="text-sm flex flex-wrap gap-4">
-                <p><span className="font-bold text-slate-500">Bạn chọn:</span> {formatAnswer(answers ? answers[idx] : null, q)}</p>
-                {!isCorrect && (
-                  <div className="w-full">
-                    <span className="font-bold text-emerald-600">Đáp án đúng:</span>{' '}
-                    <span className="text-slate-700 italic text-sm">
-                      {getCorrectAnswerDisplay(q)}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        {onReview && (
+          <button
+            onClick={onReview}
+            className="px-8 py-3 bg-sky-600 text-white rounded-xl font-bold hover:bg-sky-500 transition shadow-lg text-base"
+          >
+            Xem lại bài thi
+          </button>
+        )}
         {onRetry && (
           <button
             onClick={onRetry}
