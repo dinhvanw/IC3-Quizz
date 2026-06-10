@@ -92,7 +92,7 @@ export default function Quiz({ quiz, mode, onExit }) {
   }, [finished, answers, mode, questions, quiz.id, quiz.title, timedOut])
 
   function selectChoice(value) {
-    // Ngăn chặn sửa đáp án của các câu đã trả lời trong chế độ kiểm tra
+    // Ngăn chặn sửa câu hỏi đã bị khóa (chỉ khóa sau khi nộp bài hoặc trong practice review)
     if (locked[index]) return
     const q = questions[index]
 
@@ -119,9 +119,8 @@ export default function Quiz({ quiz, mode, onExit }) {
     }
   }
 
-  // Hàm hỗ trợ kiểm tra nếu một câu hỏi có thể được quay lại trong exam mode
   function canGoBack() {
-    return mode === 'practice'
+    return true
   }
 
   function resetQuestion() {
@@ -165,7 +164,6 @@ export default function Quiz({ quiz, mode, onExit }) {
     }
 
     if (!isLast) {
-      setLocked(prev => { const n = [...prev]; n[index] = true; return n })
       setIndex(i => i + 1)
       setShowFeedback(false)
     } else {
@@ -185,9 +183,6 @@ export default function Quiz({ quiz, mode, onExit }) {
 
   function skip() {
     if (index < questions.length - 1) {
-      if (mode === 'exam') {
-        setLocked(prev => { const n = [...prev]; n[index] = true; return n })
-      }
       setIndex(i => i + 1)
       setShowFeedback(false)
     } else {
@@ -433,19 +428,15 @@ export default function Quiz({ quiz, mode, onExit }) {
                       const isAnswered = answers[qIdx] !== null && answers[qIdx] !== undefined && answers[qIdx] !== '';
                       const isMarked = marked[qIdx];
                       const isCurrent = index === qIdx;
-                      const isPreviousQuestion = mode === 'exam' && qIdx < index;
 
                       let bgClass = "bg-slate-100 border-slate-200 text-slate-700";
                       if (isAnswered) bgClass = "bg-sky-500 border-sky-600 text-white shadow-sm";
                       if (isMarked) bgClass = "bg-amber-500 border-amber-600 text-white shadow-sm";
-                      if (isPreviousQuestion) bgClass = "bg-slate-200 border-slate-300 text-slate-400 cursor-not-allowed";
 
                       return (
                         <button
                           key={qIdx}
-                          disabled={isPreviousQuestion}
                           onClick={() => {
-                            if (isPreviousQuestion) return;
                             setIndex(qIdx);
                             setIsMapOpen(false);
                           }}
