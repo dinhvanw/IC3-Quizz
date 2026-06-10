@@ -92,6 +92,7 @@ export default function Quiz({ quiz, mode, onExit }) {
   }, [finished, answers, mode, questions, quiz.id, quiz.title, timedOut])
 
   function selectChoice(value) {
+    // Ngăn chặn sửa đáp án của các câu đã trả lời trong chế độ kiểm tra
     if (locked[index]) return
     const q = questions[index]
 
@@ -116,6 +117,11 @@ export default function Quiz({ quiz, mode, onExit }) {
     if (mode === 'practice') {
       setShowFeedback(false)
     }
+  }
+
+  // Hàm hỗ trợ kiểm tra nếu một câu hỏi có thể được quay lại trong exam mode
+  function canGoBack() {
+    return mode === 'practice'
   }
 
   function resetQuestion() {
@@ -170,6 +176,9 @@ export default function Quiz({ quiz, mode, onExit }) {
   }
 
   function prev() {
+    // Trong chế độ kiểm tra, không cho phép quay lại câu trước đó
+    if (!canGoBack()) return
+    
     if (index > 0) {
       setIndex(i => i - 1)
       setShowFeedback(false)
@@ -247,8 +256,9 @@ export default function Quiz({ quiz, mode, onExit }) {
         <div className="flex items-center gap-2">
           <button
             onClick={prev}
-            disabled={index === 0}
-            className={`px-2 sm:px-4 py-1.5 rounded text-white disabled:opacity-50 text-xs sm:text-sm font-medium transition ${index > 0 ? 'bg-blue-600 hover:bg-blue-500' : 'bg-slate-800 hover:bg-slate-700'
+            disabled={index === 0 || !canGoBack()}
+            title={mode === 'exam' ? 'Không thể quay lại trong chế độ kiểm tra' : ''}
+            className={`px-2 sm:px-4 py-1.5 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm font-medium transition ${(index > 0 && canGoBack()) ? 'bg-blue-600 hover:bg-blue-500' : 'bg-slate-800 hover:bg-slate-700'
               }`}
           >
             Trước
