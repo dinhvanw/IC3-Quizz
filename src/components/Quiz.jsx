@@ -37,6 +37,7 @@ export default function Quiz({ quiz, mode, onExit }) {
   const [locked, setLocked] = useState(Array(questions.length).fill(false))
   const [remaining, setRemaining] = useState(quiz.duration * 60)
   const [timedOut, setTimedOut] = useState(false);
+  const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false)
 
   // Các state tiện ích mới
   const [isMapOpen, setIsMapOpen] = useState(false)
@@ -506,6 +507,46 @@ export default function Quiz({ quiz, mode, onExit }) {
         </div>
       )}
 
+      {/* Modal Xác nhận Nộp bài */}
+      {showSubmitConfirmation && (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-2xl max-w-md w-full mx-4 space-y-6 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl">
+                ⚠️
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Xác nhận nộp bài</h3>
+                <p className="text-xs text-slate-500">Hành động này không thể hoàn tác</p>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <p className="text-sm text-amber-900">
+                Bạn đã hoàn thành tất cả các câu hỏi. Bấm "Xác nhận" để nộp bài thi và xem điểm số.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowSubmitConfirmation(false)}
+                className="flex-1 py-3 bg-slate-100 text-slate-700 rounded-2xl font-bold text-sm hover:bg-slate-200 transition"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={() => {
+                  setShowSubmitConfirmation(false);
+                  submit();
+                }}
+                className="flex-1 py-3 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-500 transition"
+              >
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )
