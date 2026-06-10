@@ -214,8 +214,6 @@ export default function AdminDashboard() {
         updatedQuestions = [...(targetQuiz.questions || []), safeCleanQuestion];
       }
 
-      console.log("Đang cố gắng cập nhật bài thi. Quiz ID:", selectedQuizId);
-      console.log("Dữ liệu câu hỏi sẽ được gửi:", updatedQuestions);
       await updateQuiz(selectedQuizId, { questions: updatedQuestions });
 
       // Quan trọng: Tải lại toàn bộ dữ liệu để đồng bộ hóa UI với DB

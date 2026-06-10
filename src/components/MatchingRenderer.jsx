@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 export default function MatchingRenderer({ question, selected, onSelect, isLocked, showCorrect, displayTitle }) {
   const { leftItems, rightItems, type } = question;
-  console.log('[MatchingRenderer] received question:', question);
 
   const isImageUrl = (url) => {
     return typeof url === 'string' && (

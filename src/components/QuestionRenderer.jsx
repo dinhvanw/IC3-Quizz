@@ -10,8 +10,6 @@ export default function QuestionRenderer({ question, selected, onSelect, isLocke
   const qType = question.type || 'multiple_choice';
   const displayTitle = question.text || question.questionText; // Đảm bảo tiêu đề câu hỏi luôn có sẵn
 
-  console.log(`[QuestionRenderer] Rendering type: ${qType}`, question); // Debugging
-
   switch (qType) {
     case 'multiple_choice':
     case 'multiple_select':

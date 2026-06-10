@@ -2,7 +2,6 @@ import React from 'react';
 
 export default function MultipleChoiceRenderer({ question, selected, onSelect, isLocked, showCorrect, displayTitle }) {
   const { type, choices, correctAnswers, answer: correctAnswer } = question;
-  console.log('[MultipleChoiceRenderer] received question:', question);
   const qType = type || 'multiple_choice';
 
   const handleChoiceClick = (index) => {

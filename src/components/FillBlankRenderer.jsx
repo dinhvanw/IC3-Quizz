@@ -2,7 +2,6 @@ import React from 'react';
 
 export default function FillBlankRenderer({ question, selected, onSelect, isLocked, showCorrect, displayTitle }) {
   const { answer: correctAnswer, explanation } = question;
-  console.log('[FillBlankRenderer] received question:', question);
   const isCorrect = selected?.trim().toLowerCase() === correctAnswer?.trim().toLowerCase();
 
   return (

@@ -2,7 +2,6 @@ import React from 'react';
 
 export default function DragDropRenderer({ question, selected, onSelect, isLocked, showCorrect, displayTitle }) {
   const { items, correctOrder } = question;
-  console.log('[DragDropRenderer] received question:', question);
   const currentOrder = Array.isArray(selected) ? selected : (items || []).map((_, i) => i);
   const isCorrect = JSON.stringify(currentOrder) === JSON.stringify(correctOrder);
 

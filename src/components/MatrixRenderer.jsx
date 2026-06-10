@@ -9,7 +9,6 @@ const formatTitle = (s) => {
 
 export default function MatrixRenderer({ question, selected, onSelect, isLocked, showCorrect, displayTitle }) {
   const { type, rows, devices, columns, answer: correctAnswer } = question; // `devices` là alias cho `rows`
-  // console.log('[MatrixRenderer] received question:', question); // Giữ lại để debug nếu cần
   const qType = type;
   const rowData = rows || devices || [];
   const colData = columns || (qType === 'TRUE_FALSE_MATRIX' ? ['Đúng', 'Sai', 'Không xác định'] : ['Nhập', 'Xuất']);
