@@ -2,7 +2,7 @@ import React from 'react';
 import { checkAnswer, formatAnswer } from '../utils/quizUtils.js';
 import { sanitizeHtml } from '../utils/htmlRenderer.jsx';
 
-export default function Results({ quiz, answers, mode, onRetry, onExit, onReview, timedOut }) {
+export default function Results({ quiz, answers, mode, onRetry = null, onExit = null, onReview = null, timedOut = false }) {
   // Hàm bổ trợ để hiển thị đáp án đúng cho mọi loại câu hỏi
   const getCorrectAnswerDisplay = (q) => {
     const choices = q.choices || q.options || [];
