@@ -163,18 +163,18 @@ export default function App(){
                     <History onReviewAttempt={setReviewingAttempt} userId={currentUser.uid} />
                   </div>
                 ) : (
-                  <div className="mt-10 grid gap-6 sm:grid-cols-2">
+                  <div className="mt-10 grid gap-6 grid-cols-1 sm:grid-cols-2">
                     {modeOptions.map(mode => (
                       <button
                         key={mode.key}
                         disabled={loading}
                         onClick={() => { setSelectedMode(mode.key); setQuizSearchTerm(''); }}
-                        className={`group relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-950 p-8 text-left text-white shadow-[0_25px_60px_rgba(15,23,42,0.16)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.22)] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`group relative overflow-hidden rounded-[28px] border border-slate-200 bg-slate-950 p-6 sm:p-8 text-left text-white shadow-[0_20px_40px_rgba(15,23,42,0.14)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.18)] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
                         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400" />
                         <div className="relative">
-                          <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-slate-200">{mode.key === 'practice' ? 'Tự học' : 'Thử thách'}</span>
-                          <p className="mt-6 text-4xl font-semibold text-white">{mode.label}</p>
+                          <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.35em] text-slate-200">{mode.key === 'practice' ? 'Tự học' : 'Thử thách'}</span>
+                          <p className="mt-6 text-3xl font-semibold text-white sm:text-4xl">{mode.label}</p>
                           <p className="mt-4 max-w-xl text-sm leading-7 text-slate-300">{mode.description}</p>
                           <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
                             <span className="block h-2.5 w-2.5 rounded-full bg-blue-400" />
@@ -211,14 +211,14 @@ export default function App(){
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  <div className="col-span-full rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="grid gap-4">
+                  <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Tìm kiếm nhanh</p>
                         <h3 className="mt-2 text-xl font-semibold text-slate-900">Lọc theo tên hoặc chuyên đề</h3>
                       </div>
-                      <div className="w-full sm:w-auto">
+                      <div className="w-full sm:max-w-sm">
                         <input
                           type="text"
                           placeholder="Tìm bài thi..."
@@ -241,32 +241,32 @@ export default function App(){
                         </div>
                         <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-blue-700">{groupedQuizzes[cat].length} đề</span>
                       </div>
-                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                        {groupedQuizzes[cat].map(quiz => (
-                          <button
-                            key={quiz.id}
-                            onClick={() => setSelectedQuiz(quiz)}
-                            className="group relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
-                          >
-                            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400" />
-                            <div className="relative space-y-4">
-                              <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.28em] text-slate-400">
-                                <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{quiz.category || 'Chuyên đề'}</span>
-                                <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{quiz.questions?.length || 0} câu</span>
+                              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+                          {groupedQuizzes[cat].map(quiz => (
+                            <button
+                              key={quiz.id}
+                              onClick={() => setSelectedQuiz(quiz)}
+                              className="group relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
+                            >
+                              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400" />
+                              <div className="relative space-y-4">
+                                <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.28em] text-slate-400">
+                                  <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{quiz.category || 'Chuyên đề'}</span>
+                                  <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{quiz.questions?.length || 0} câu</span>
+                                </div>
+                                <h4 className="text-lg font-semibold text-slate-900">{quiz.title}</h4>
+                                <p className="min-h-[3rem] text-sm leading-6 text-slate-600">{quiz.summary || 'Luyện tập với bộ câu hỏi chuyên sâu.'}</p>
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-sm text-slate-500">
+                                  <span className="inline-flex items-center gap-2">
+                                    <span className="h-2 w-2 rounded-full bg-blue-500" />
+                                    {quiz.duration || 0} phút
+                                  </span>
+                                  <span className="inline-flex items-center gap-2 font-semibold text-blue-600">Bắt đầu →</span>
+                                </div>
                               </div>
-                              <h4 className="text-lg font-semibold text-slate-900">{quiz.title}</h4>
-                              <p className="min-h-[3rem] text-sm leading-6 text-slate-600">{quiz.summary || 'Luyện tập với bộ câu hỏi chuyên sâu.'}</p>
-                              <div className="flex items-center justify-between text-sm text-slate-500">
-                                <span className="inline-flex items-center gap-2">
-                                  <span className="h-2 w-2 rounded-full bg-blue-500" />
-                                  {quiz.duration || 0} phút
-                                </span>
-                                <span className="inline-flex items-center gap-2 font-semibold text-blue-600">Bắt đầu →</span>
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                            </button>
+                          ))}
+                        </div>
                     </div>
                   ))}
                 </div>
@@ -275,7 +275,7 @@ export default function App(){
                 <div className="pt-8 text-center">
                   <button 
                     onClick={selectedMode === 'practice' ? handleStartPractice : handleStartExam}
-                    className="inline-flex items-center justify-center rounded-full bg-blue-600 px-10 py-4 text-sm font-semibold text-white shadow-xl transition hover:bg-blue-700"
+                    className="inline-flex w-full items-center justify-center rounded-full bg-blue-600 px-10 py-4 text-sm font-semibold text-white shadow-xl transition hover:bg-blue-700 sm:w-auto"
                   >
                     Làm bài TỔNG HỢP tất cả các phần
                   </button>
