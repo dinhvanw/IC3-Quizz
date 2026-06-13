@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import Quiz from './components/Quiz'
 import History from './components/History'
 import Results from './components/Results'
@@ -12,7 +11,6 @@ const modeOptions = [
 ]
 
 export default function App(){
-  const navigate = useNavigate()
   const [selectedQuiz, setSelectedQuiz] = useState(null)
   const [preparedQuiz, setPreparedQuiz] = useState(null) // New state for the quiz after shuffling
   const [userAnswers, setUserAnswers] = useState([]) // New state for user answers
@@ -98,17 +96,6 @@ export default function App(){
     setSelectedMode(null)
   }
 
-    // User Header Component (simplified - không cần login)
-  const UserHeaderBar = () => (
-    <div className="user-header">
-      <div className="user-avatar">IC</div>
-      <div className="user-info">
-        <span className="user-name">IC3 Quiz System</span>
-        <span className="user-email">Tracacng bài kiểm tra trực tuyến</span>
-      </div>
-    </div>
-  )
-
   // Nếu đang ở chế độ Admin, hiển thị Dashboard
   // Chuyển hướng đến /admin bằng route instead of view state
 
@@ -141,33 +128,19 @@ export default function App(){
             {!selectedMode ? (
               /* BƯỚC 1: CHỌN CHẾ ĐỘ */
               <>
-                {/* Header bar with user info and admin button */}
-                <div className="flex items-center justify-between mb-6">
-                  <UserHeaderBar />
-                  <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => navigate('/admin')}
-                      className="flex items-center gap-2 px-3 py-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition text-xs font-bold"
-                      title="Quản lý câu hỏi (Admin)"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                      Quản trị
-                    </button>
-                  </div>
-                </div>
-
                 <div className="max-w-3xl mx-auto text-center">
                   <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Hệ thống IC3 Quizz</p>
                   <h1 className="mt-4 text-3xl sm:text-5xl font-semibold tracking-tight text-slate-900">Chọn phương thức học</h1>
+                  <p className="mt-4 text-sm text-slate-600 sm:text-base">Chọn chế độ phù hợp nhất với mục tiêu của bạn: học từng bước hay thi thử theo đúng thời gian.</p>
                 </div>
 
                 {/* Tabs chuyển đổi */}
-                <div className="flex justify-center gap-4 mt-8 border-b border-slate-200">
+                <div className="flex justify-center gap-4 mt-10 border-b border-slate-200">
                   <button
                     onClick={() => setActiveTab('quizzes')}
-                    className={`px-6 py-3 font-bold text-sm border-b-2 transition-all ${
-                      activeTab === 'quizzes' 
-                        ? 'border-blue-600 text-blue-600' 
+                    className={`px-6 py-3 font-semibold text-sm border-b-2 transition-all ${
+                      activeTab === 'quizzes'
+                        ? 'border-blue-600 text-blue-600'
                         : 'border-transparent text-slate-400 hover:text-slate-600'
                     }`}
                   >
@@ -175,9 +148,9 @@ export default function App(){
                   </button>
                   <button
                     onClick={() => setActiveTab('history')}
-                    className={`px-6 py-3 font-bold text-sm border-b-2 transition-all ${
-                      activeTab === 'history' 
-                        ? 'border-blue-600 text-blue-600' 
+                    className={`px-6 py-3 font-semibold text-sm border-b-2 transition-all ${
+                      activeTab === 'history'
+                        ? 'border-blue-600 text-blue-600'
                         : 'border-transparent text-slate-400 hover:text-slate-600'
                     }`}
                   >
@@ -186,21 +159,28 @@ export default function App(){
                 </div>
 
                 {activeTab === 'history' ? (
-                  <div className="mt-8">
+                  <div className="mt-10">
                     <History onReviewAttempt={setReviewingAttempt} userId={currentUser.uid} />
                   </div>
                 ) : (
-                  <div className="mt-12 grid gap-4 sm:gap-6 md:grid-cols-2">
+                  <div className="mt-10 grid gap-6 sm:grid-cols-2">
                     {modeOptions.map(mode => (
                       <button
                         key={mode.key}
                         disabled={loading}
                         onClick={() => { setSelectedMode(mode.key); setQuizSearchTerm(''); }}
-                        className={`group rounded-[28px] border border-slate-200 bg-slate-950 px-8 py-10 text-left text-white shadow-[0_20px_40px_rgba(15,23,42,0.12)] transition hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(15,23,42,0.18)] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`group relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-950 p-8 text-left text-white shadow-[0_25px_60px_rgba(15,23,42,0.16)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(15,23,42,0.22)] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        <p className="text-xs uppercase tracking-[0.35em] text-slate-400">{mode.key === 'practice' ? 'Tự học' : 'Thử thách'}</p>
-                        <p className="mt-4 text-4xl font-semibold text-white">{mode.label}</p>
-                        <p className="mt-3 max-w-lg text-sm leading-7 text-slate-300">{mode.description}</p>
+                        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400" />
+                        <div className="relative">
+                          <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.3em] text-slate-200">{mode.key === 'practice' ? 'Tự học' : 'Thử thách'}</span>
+                          <p className="mt-6 text-4xl font-semibold text-white">{mode.label}</p>
+                          <p className="mt-4 max-w-xl text-sm leading-7 text-slate-300">{mode.description}</p>
+                          <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
+                            <span className="block h-2.5 w-2.5 rounded-full bg-blue-400" />
+                            Bắt đầu ngay
+                          </div>
+                        </div>
                       </button>
                     ))}
                   </div>
@@ -209,44 +189,81 @@ export default function App(){
             ) : (
               /* BƯỚC 2: CHỌN CẤP ĐỘ VÀ BÀI THI */
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-100 pb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Danh sách bài tập</h2>
-                    <p className="text-slate-500 text-sm">Chế độ đang chọn: <span className="font-bold text-blue-600 uppercase">{selectedMode === 'practice' ? 'Luyện tập' : 'Kiểm tra'}</span></p>
+                <div className="rounded-[32px] border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                  <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.35em] text-blue-600">{selectedMode === 'practice' ? 'Luyện tập' : 'Kiểm tra'}</p>
+                      <h2 className="mt-3 text-3xl font-bold text-slate-900">Danh sách bài tập</h2>
+                      <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">Xem nhanh các đề theo chuyên đề. Nhấn vào bài để mở đề và bắt đầu làm ngay.</p>
+                    </div>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                      <div className="inline-flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm">
+                        <span className="inline-flex h-2.5 w-2.5 rounded-full bg-blue-500" />
+                        <span>{Object.values(groupedQuizzes).flat().length} bài</span>
+                      </div>
+                      <button
+                        onClick={() => { setSelectedMode(null); setQuizSearchTerm(''); }}
+                        className="inline-flex items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                      >
+                        ← Đổi chế độ
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <input
-                      type="text"
-                      placeholder="Tìm bài thi..."
-                      value={quizSearchTerm}
-                      onChange={(e) => setQuizSearchTerm(e.target.value)}
-                      className="px-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white w-full sm:w-48"
-                    />
-                    <button 
-                      onClick={() => { setSelectedMode(null); setQuizSearchTerm(''); }}
-                      className="px-4 py-2 bg-slate-150 text-slate-600 rounded-full text-xs font-bold hover:bg-slate-200 transition whitespace-nowrap"
-                    >
-                      ← Đổi chế độ
-                    </button>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  <div className="col-span-full rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Tìm kiếm nhanh</p>
+                        <h3 className="mt-2 text-xl font-semibold text-slate-900">Lọc theo tên hoặc chuyên đề</h3>
+                      </div>
+                      <div className="w-full sm:w-auto">
+                        <input
+                          type="text"
+                          placeholder="Tìm bài thi..."
+                          value={quizSearchTerm}
+                          onChange={(e) => setQuizSearchTerm(e.target.value)}
+                          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div className="space-y-10">
                   {Object.keys(groupedQuizzes).sort().map(cat => (
                     <div key={cat} className="space-y-4">
-                      <div className="flex items-center gap-4">
-                        <h3 className="text-lg font-black text-slate-800 uppercase tracking-widest">{cat}</h3>
-                        <div className="flex-1 h-px bg-slate-200"></div>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Chuyên đề</p>
+                          <h3 className="mt-2 text-2xl font-semibold text-slate-900">{cat}</h3>
+                        </div>
+                        <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-blue-700">{groupedQuizzes[cat].length} đề</span>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                         {groupedQuizzes[cat].map(quiz => (
                           <button
                             key={quiz.id}
                             onClick={() => setSelectedQuiz(quiz)}
-                            className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition-all text-center group"
+                            className="group relative overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg"
                           >
-                            <span className="block text-xl font-bold text-slate-900 group-hover:text-blue-600">{quiz.title}</span>
-                            <span className="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">{quiz.questions?.length || 0} CÂU HỎI</span>
+                            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400" />
+                            <div className="relative space-y-4">
+                              <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.28em] text-slate-400">
+                                <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{quiz.category || 'Chuyên đề'}</span>
+                                <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{quiz.questions?.length || 0} câu</span>
+                              </div>
+                              <h4 className="text-lg font-semibold text-slate-900">{quiz.title}</h4>
+                              <p className="min-h-[3rem] text-sm leading-6 text-slate-600">{quiz.summary || 'Luyện tập với bộ câu hỏi chuyên sâu.'}</p>
+                              <div className="flex items-center justify-between text-sm text-slate-500">
+                                <span className="inline-flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-blue-500" />
+                                  {quiz.duration || 0} phút
+                                </span>
+                                <span className="inline-flex items-center gap-2 font-semibold text-blue-600">Bắt đầu →</span>
+                              </div>
+                            </div>
                           </button>
                         ))}
                       </div>
@@ -258,7 +275,7 @@ export default function App(){
                 <div className="pt-8 text-center">
                   <button 
                     onClick={selectedMode === 'practice' ? handleStartPractice : handleStartExam}
-                    className="px-8 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200"
+                    className="inline-flex items-center justify-center rounded-full bg-blue-600 px-10 py-4 text-sm font-semibold text-white shadow-xl transition hover:bg-blue-700"
                   >
                     Làm bài TỔNG HỢP tất cả các phần
                   </button>
